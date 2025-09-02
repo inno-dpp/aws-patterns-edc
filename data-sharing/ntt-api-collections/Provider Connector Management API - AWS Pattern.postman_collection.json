@@ -1,0 +1,543 @@
+{
+	"info": {
+		"_postman_id": "ad70d6d5-0849-4f51-9f99-5a113f326d29",
+		"name": "Provider Connector Management API - AWS Pattern",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "33839497"
+	},
+	"item": [
+		{
+			"name": "Asset",
+			"item": [
+				{
+					"name": "1 - createAsset",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "root",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"@context\": {\n    \"@vocab\": \"https://w3id.org/edc/v0.0.1/ns/\"\n  },\n  \"@id\": \"cluj-parking-asset\",\n  \"properties\": {\n    \"name\": \"Cluj parking data\",\n    \"contenttype\": \"application/json\"\n  },\n  \"dataAddress\": {\n    \"type\": \"HttpData\",\n    \"name\": \"Parking data endpoint\",\n    \"baseUrl\": \"https://data.e-primariaclujnapoca.ro/sitpark.json\",\n    \"proxyPath\": \"true\"\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{PROVIDER_MANAGEMENT_URL}}/assets",
+							"host": [
+								"{{PROVIDER_MANAGEMENT_URL}}"
+							],
+							"path": [
+								"assets"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2 - requestAssets",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Api-Key",
+								"value": "api_key",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{PROVIDER_MANAGEMENT_URL}}/assets/request",
+							"host": [
+								"{{PROVIDER_MANAGEMENT_URL}}"
+							],
+							"path": [
+								"assets",
+								"request"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "updateAsset",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"@id\": \"{{ASSET_ID}}\",\n    \"edc:properties\": {\n        \"edc:id\": \"{{ASSET_ID}}\",\n        \"edc:name\": \"NEW NAME\"\n    },\n    \"@context\": {\n        \"dct\": \"https://purl.org/dc/terms/\",\n        \"edc\": \"https://w3id.org/edc/v0.0.1/ns/\",\n        \"dcat\": \"https://www.w3.org/ns/dcat/\",\n        \"odrl\": \"http://www.w3.org/ns/odrl/2/\",\n        \"dspace\": \"https://w3id.org/dspace/v0.8/\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{PROVIDER_MANAGEMENT_URL}}/assets/",
+							"host": [
+								"{{PROVIDER_MANAGEMENT_URL}}"
+							],
+							"path": [
+								"assets",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getAsset",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{PROVIDER_MANAGEMENT_URL}}/assets/:id",
+							"host": [
+								"{{PROVIDER_MANAGEMENT_URL}}"
+							],
+							"path": [
+								"assets",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "removeAsset",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{PROVIDER_MANAGEMENT_URL}}/assets/:id",
+							"host": [
+								"{{PROVIDER_MANAGEMENT_URL}}"
+							],
+							"path": [
+								"assets",
+								":id"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "customAsset",
+									"disabled": true
+								}
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getAssetDataAddress",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{PROVIDER_MANAGEMENT_URL}}/assets/:id/dataaddress",
+							"host": [
+								"{{PROVIDER_MANAGEMENT_URL}}"
+							],
+							"path": [
+								"assets",
+								":id",
+								"dataaddress"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Catalog",
+			"item": [
+				{
+					"name": "requestCatalog",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"@context\": {\n        \"edc\": \"https://w3id.org/edc/v0.0.1/ns/\"\n    },\n    \"@type\": \"CatalogRequest\",\n    \"providerUrl\": \"CONNECTOR_PROTOCOL_URL\", // CHANGE WITH THE CONNECTOR PROVIDING THE CATALOG\n    \"protocol\": \"dataspace-protocol-http\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{PROVIDER_MANAGEMENT_URL}}/catalog/request",
+							"host": [
+								"{{PROVIDER_MANAGEMENT_URL}}"
+							],
+							"path": [
+								"catalog",
+								"request"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Contract Agreement",
+			"item": [
+				{
+					"name": "queryAllAgreements",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{PROVIDER_MANAGEMENT_URL}}/contractagreements/request",
+							"host": [
+								"{{PROVIDER_MANAGEMENT_URL}}"
+							],
+							"path": [
+								"contractagreements",
+								"request"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getContractAgreement",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{PROVIDER_MANAGEMENT_URL}}/contractagreements/:id",
+							"host": [
+								"{{PROVIDER_MANAGEMENT_URL}}"
+							],
+							"path": [
+								"contractagreements",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "thunder"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Contract Definition",
+			"item": [
+				{
+					"name": "4 - createContractDefinition",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"@context\": {\n        \"edc\": \"https://w3id.org/edc/v0.0.1/ns/\"\n    },\n    \"@id\": \"parking_contract\",\n    \"accessPolicyId\": \"aPolicy\",\n    \"contractPolicyId\": \"aPolicy\",\n    \"assetsSelector\": [\n        {\n            \"@type\": \"CriterionDto\",\n            \"operandLeft\": \"https://w3id.org/edc/v0.0.1/ns/id\",\n            \"operator\": \"=\",\n            \"operandRight\": \"cluj-parking-asset\"\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{PROVIDER_MANAGEMENT_URL}}/contractdefinitions",
+							"host": [
+								"{{PROVIDER_MANAGEMENT_URL}}"
+							],
+							"path": [
+								"contractdefinitions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "queryAllContractDefinitions",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{PROVIDER_MANAGEMENT_URL}}/contractdefinitions/request",
+							"host": [
+								"{{PROVIDER_MANAGEMENT_URL}}"
+							],
+							"path": [
+								"contractdefinitions",
+								"request"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getContractDefinition",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{PROVIDER_MANAGEMENT_URL}}/contractdefinitions/:id",
+							"host": [
+								"{{PROVIDER_MANAGEMENT_URL}}"
+							],
+							"path": [
+								"contractdefinitions",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "thunder"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deleteContractDefinition",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{PROVIDER_MANAGEMENT_URL}}/contractdefinitions/:id",
+							"host": [
+								"{{PROVIDER_MANAGEMENT_URL}}"
+							],
+							"path": [
+								"contractdefinitions",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "contract-id"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Policy",
+			"item": [
+				{
+					"name": "queryAllPolicies",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{PROVIDER_MANAGEMENT_URL}}/policydefinitions/request",
+							"host": [
+								"{{PROVIDER_MANAGEMENT_URL}}"
+							],
+							"path": [
+								"policydefinitions",
+								"request"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getPolicy",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{PROVIDER_MANAGEMENT_URL}}/policydefinitions/:id",
+							"host": [
+								"{{PROVIDER_MANAGEMENT_URL}}"
+							],
+							"path": [
+								"policydefinitions",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deletePolicy",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{PROVIDER_MANAGEMENT_URL}}/policydefinitions/:id",
+							"host": [
+								"{{PROVIDER_MANAGEMENT_URL}}"
+							],
+							"path": [
+								"policydefinitions",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "3 - create policy",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"@context\": {\n    \"@vocab\": \"https://w3id.org/edc/v0.0.1/ns/\",\n    \"odrl\": \"http://www.w3.org/ns/odrl/2/\"\n  },\n  \"@id\": \"aPolicy\",\n\"policy\": {\n    \"@context\": \"http://www.w3.org/ns/odrl.jsonld\",\n    \"@type\": \"Set\",\n    \"@id\": \"aPolicy\",\n    \"permission\": [],\n    \"prohibition\": [],\n    \"obligation\": [],\n    \"target\": \"cluj-parking-asset\"\n  }\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{PROVIDER_MANAGEMENT_URL}}/policydefinitions",
+							"host": [
+								"{{PROVIDER_MANAGEMENT_URL}}"
+							],
+							"path": [
+								"policydefinitions"
+							],
+							"query": [
+								{
+									"key": "offset",
+									"value": "13",
+									"disabled": true
+								},
+								{
+									"key": "limit",
+									"value": "97",
+									"disabled": true
+								},
+								{
+									"key": "filter",
+									"value": "thunder",
+									"disabled": true
+								},
+								{
+									"key": "sort",
+									"value": "ASC",
+									"disabled": true
+								},
+								{
+									"key": "sortField",
+									"value": "thunder",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "apikey",
+		"apikey": [
+			{
+				"key": "value",
+				"value": "password",
+				"type": "string"
+			},
+			{
+				"key": "key",
+				"value": "X-Api-Key",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "PROVIDER_MANAGEMENT_URL",
+			"value": "https://companyx.dataspace-labs.com/management/v3"
+		},
+		{
+			"key": "CONSUMER_PROTOCOL_URL",
+			"value": "http://consumer-tractusx-connector-controlplane.consumer:8084/api/v1/dsp"
+		},
+		{
+			"key": "ASSET_NAME",
+			"value": ""
+		},
+		{
+			"key": "ASSET_ID",
+			"value": ""
+		},
+		{
+			"key": "POLICY_ID",
+			"value": ""
+		},
+		{
+			"key": "CONTRACT_NAME",
+			"value": ""
+		},
+		{
+			"key": "CONTRACT_ID",
+			"value": ""
+		}
+	]
+}
