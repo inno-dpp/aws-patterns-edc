@@ -243,7 +243,7 @@
 			"name": "Contract Agreement",
 			"item": [
 				{
-					"name": "queryAllAgreements",
+					"name": "8 - queryAllAgreements",
 					"request": {
 						"method": "POST",
 						"header": [],
@@ -277,7 +277,7 @@
 							"variable": [
 								{
 									"key": "id",
-									"value": "thunder"
+									"value": "6b7dfe29-6c79-42d7-82b4-0442a3e0d589"
 								}
 							]
 						}
@@ -317,7 +317,7 @@
 					"response": []
 				},
 				{
-					"name": "getNegotiation",
+					"name": "7 - getNegotiation",
 					"request": {
 						"method": "GET",
 						"header": [],
@@ -333,7 +333,7 @@
 							"variable": [
 								{
 									"key": "id",
-									"value": "thunder"
+									"value": "e690a85e-d4fc-4091-940d-1d7c31a9a5bb"
 								}
 							]
 						}
@@ -416,7 +416,7 @@
 					"response": []
 				},
 				{
-					"name": "getNegotiationState",
+					"name": "6 - getNegotiationState",
 					"request": {
 						"method": "GET",
 						"header": [],
@@ -433,7 +433,7 @@
 							"variable": [
 								{
 									"key": "id",
-									"value": "thunder"
+									"value": "6b7dfe29-6c79-42d7-82b4-0442a3e0d589"
 								}
 							]
 						}
@@ -441,13 +441,13 @@
 					"response": []
 				},
 				{
-					"name": "create contractnegotiation Copy",
+					"name": "5 - create contractnegotiation Copy",
 					"request": {
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"@context\": {\n        \"edc\": \"https://w3id.org/edc/v0.0.1/ns/\"\n    },\n    \"@type\": \"https://w3id.org/edc/v0.0.1/ns/ContractRequest\",\n    \"connectorAddress\": \"http://provider-tractusx-connector-controlplane.provider:8084/api/v1/dsp\",\n    \"protocol\": \"dataspace-protocol-http\",\n    \"providerId\": \"{{PROVIDER_CLIENT_ID}}\",\n    \"connectorId\": \"{{CONSUMER_CLIENT_ID}}\",\n    \"offer\": {\n        \"assetId\": \"{{ASSET_ID}}\",\n        \"offerId\": \"{{CONTRACT_OFFER_ID}}\",\n        \"policy\": {\n            \"@context\": \"http://www.w3.org/ns/odrl.jsonld\",\n            \"@type\": \"odrl:Set\",\n            \"permission\": {\n                \"odrl:target\": \"{{ASSET_ID}}\",\n                \"odrl:action\": {\n                    \"odrl:type\": \"https://w3id.org/edc/v0.0.1/ns/USE\"\n                }\n            },\n            \"prohibition\": [],\n            \"obligation\": [],\n            \"target\": \"{{ASSET_ID}}\"\n        }\n    }\n}",
+							"raw": "{\n  \"@context\": [\n    \"https://w3id.org/edc/connector/management/v0.0.1\",\n    \"http://www.w3.org/ns/odrl.jsonld\"\n  ],\n  \"@type\": \"ContractRequest\",\n  \"counterPartyAddress\": \"https://companyx.dataspace-labs.com/api/v1/dsp\",\n  \"protocol\": \"dataspace-protocol-http\",\n  \"policy\": {\n    \"@id\": \"cGFya2luZ19jb250cmFjdA==:Y2x1ai1wYXJraW5nLWFzc2V0:M2E4ZjAyNWQtOTI4NC00YzQyLThhYjQtNGZjYzgwYjRmNDIw\",\n    \"@type\": \"odrl:Offer\",\n    \"odrl:permission\": [],\n    \"odrl:prohibition\": [],\n    \"odrl:obligation\": [],\n    \"odrl:target\": { \"@id\": \"cluj-parking-asset\" },\n    \"assigner\": \"BPNL000000000001\"\n  }\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -465,7 +465,57 @@
 							]
 						}
 					},
-					"response": []
+					"response": [
+						{
+							"name": "create contractnegotiation Copy",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"@context\": [\n    \"https://w3id.org/edc/connector/management/v0.0.1\",\n    \"http://www.w3.org/ns/odrl.jsonld\"\n  ],\n  \"@type\": \"ContractRequest\",\n  \"counterPartyAddress\": \"https://companyx.dataspace-labs.com/api/v1/dsp\",\n  \"protocol\": \"dataspace-protocol-http\",\n  \"policy\": {\n    \"@type\": \"Offer\",\n    \"@id\": \"parking_contract\",\n    \"target\": \"cluj-parking-asset\",\n    \"assigner\": \"BPNL000000000001\"\n  }\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{CONSUMER_MANAGEMENT_URL}}/contractnegotiations/",
+									"host": [
+										"{{CONSUMER_MANAGEMENT_URL}}"
+									],
+									"path": [
+										"contractnegotiations",
+										""
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "Date",
+									"value": "Wed, 03 Sep 2025 05:26:31 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "362"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"@type\": \"IdResponse\",\n    \"@id\": \"e690a85e-d4fc-4091-940d-1d7c31a9a5bb\",\n    \"createdAt\": 1756877191161,\n    \"@context\": {\n        \"tx\": \"https://w3id.org/tractusx/v0.0.1/ns/\",\n        \"tx-auth\": \"https://w3id.org/tractusx/auth/\",\n        \"cx-policy\": \"https://w3id.org/catenax/policy/\",\n        \"@vocab\": \"https://w3id.org/edc/v0.0.1/ns/\",\n        \"edc\": \"https://w3id.org/edc/v0.0.1/ns/\",\n        \"odrl\": \"http://www.w3.org/ns/odrl/2/\"\n    }\n}"
+						}
+					]
 				}
 			]
 		},
@@ -597,13 +647,13 @@
 			"name": "Transfer Process",
 			"item": [
 				{
-					"name": "initiateTransfer",
+					"name": "9 - initiateTransfer",
 					"request": {
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"@context\": {\n        \"edc\": \"https://w3id.org/edc/v0.0.1/ns/\"\n    },\n    \"@type\": \"https://w3id.org/edc/v0.0.1/ns/TransferRequest\",\n    \"protocol\": \"dataspace-protocol-http\",\n    \"connectorAddress\": \"{{PROVIDER_PROTOCOL_URL}}\",\n    \"contractId\": \"{{CONTRACT_AGREEMENT_ID}}\",\n    \"connectorId\": \"{{PROVIDER_CLIENT_ID}}\",\n    \"assetId\": \"{{ASSET_ID}}\",\n    \"transferType\": {\n        \"contentType\": \"application/json\",\n        \"isFinite\": true\n    },\n    \"dataDestination\": {\n        \"type\": \"AmazonS3\",\n        \"bucketName\": \"{{ REPLACE WITH THE DESTINATION BUCKET NAME }}\",\n        \"keyName\": \"{{ REPLACE WITH YOUR OBJECT NAME }}\",\n        \"region\": \"{{ REPLACE WITH THE BUCKET REGION }}\",\n        \"accessKeyId\": \"{{ REPLACE WITH YOUR ACCESS KEY ID }}\",\n        \"secretAccessKey\": \"{{ REPLACE WITH SECRET ACCESS KEY }}\"\n    }\n}",
+							"raw": "{\n    \"@context\": { \"@vocab\": \"https://w3id.org/edc/v0.0.1/ns/\" },\n    \"@type\": \"TransferRequest\",\n    \"counterPartyAddress\": \"https://companyx.dataspace-labs.com/api/v1/dsp\",\n    \"protocol\": \"dataspace-protocol-http\",\n    \"assetId\": \"cluj-parking-asset\",\n    \"contractId\": \"c532eac2-afae-4ba6-8a2a-c071b44df6da\",\n    \"transferType\": \"HttpData-PUSH\",\n    \"dataDestination\": {\n      \"type\": \"HttpData\",\n      \"baseUrl\": \"http://13.61.219.87:8080/api/click-houses/external?datatype=awssetuptest\",\n      \"contentType\": \"application/json\",\n      \"method\": \"POST\",\n      \"header:Authorization\": \"Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ1c2VyIiwiZXhwIjoxNzU5MDYwNzg0LCJhdXRoIjoiUk9MRV9VU0VSIiwiaWF0IjoxNzU2NDY4Nzg0fQ.5w4Q8E2fhuT4YqtxPRVpN_mtuoKa2ZF7BUgSFhqISvoK6EJa-EUTzYeHXR9-HyzbOs8jzXGvdagHhGPa3ltdtg\"\n    },\n    \"managedResources\": false\n  }",
 							"options": {
 								"raw": {
 									"language": "json"
