@@ -1,0 +1,32 @@
+##############################################
+# {{ org_name|title }} configuration
+##############################################
+
+variable "{{ org_name }}_namespace" {
+  type    = string
+  default = "{{ org_name }}"
+}
+
+variable "{{ org_name }}_bpn" {
+  default = "{{ bpn }}"
+}
+
+variable "{{ org_name }}_humanReadableName" {
+  default = "{{ org_name }}"
+}
+
+variable "{{ org_name }}_datasource" {
+  default = {
+    database_port  = 5432
+    admin_password = "postgres"
+    database_name  = "edc"
+    username       = "edc"
+    password       = "password"
+  }
+}
+
+variable "{{ org_name }}_ih_superuser_apikey" {
+  default     = "c3VwZXItdXNlcg==.c3VwZXItc2VjcmV0LWtleQo="
+  description = "Management API Key for the Super-User. Defaults to 'base64(super-user).base64(super-secret-key)"
+  type        = string
+}

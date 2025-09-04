@@ -1,0 +1,74 @@
+# {{ org_name|title }} namespace
+resource "kubernetes_namespace" "{{ org_name }}_namespace" {
+  metadata {
+    name = var.{{ org_name }}_namespace
+  }
+}
+
+# {{ org_name|title }} tx-connector
+module "{{ org_name }}_tx-connector" {
+  source = "./modules/tx-connector"
+
+  humanReadableName = var.{{ org_name }}_humanReadableName
+  namespace         = kubernetes_namespace.{{ org_name }}_namespace.metadata[0].name
+  participantId     = var.{{ org_name }}_bpn
+
+  dcp_config = {
+    id                     = "did:web:{{ org_name }}.${local.domain_name}"
+    sts_token_url          = "https://{{ org_name }}.${local.domain_name}/api/sts/token"
+    sts_client_id          = "did:web:{{ org_name }}.${local.domain_name}"
+    sts_clientsecret_alias = "did:web:{{ org_name }}.${local.domain_name}-sts-client-secret"
+    issuer                 = "did:web:issuer.${local.domain_name}"
+  }
+
+  dataplane = {
+    privatekey_alias = "did:web:{{ org_name }}.${local.domain_name}#signing-key-1"
+    publickey_alias  = "did:web:{{ org_name }}.${local.domain_name}#signing-key-1"
+  }
+
+  connector_hostname = "{{ org_name }}.${local.domain_name}"
+  bdrs_hostname      = "bdrs.${local.domain_name}"
+}
+
+# {{ org_name|title }} tx-identity-hub
+module "{{ org_name }}_tx-identity-hub" {
+  depends_on = [module.{{ org_name }}_tx-connector]
+
+  source = "./modules/tx-identity-hub"
+
+  humanReadableName   = var.{{ org_name }}_humanReadableName
+  namespace           = kubernetes_namespace.{{ org_name }}_namespace.metadata[0].name
+  participantId       = var.{{ org_name }}_bpn
+  vault-url           = local.{{ org_name }}_vault-url
+  ih_superuser_apikey = var.{{ org_name }}_ih_superuser_apikey
+
+  aliases = {
+    sts-private-key   = "did:web:issuer.${local.domain_name}#signing-key-1"
+    sts-public-key-id = "did:web:issuer.${local.domain_name}#signing-key-1"
+  }
+
+  datasource = {
+    username = var.{{ org_name }}_datasource.username
+    password = var.{{ org_name }}_datasource.password
+    url      = local.{{ org_name }}_jdbcUrl
+  }
+
+  image = var.tx-identity-hub_image
+}
+
+# {{ org_name|title }} ingress for tx-connector and tx-identity-hub
+module "{{ org_name }}_connector_ingress" {
+  depends_on = [module.{{ org_name }}_tx-identity-hub]
+
+  source = "./modules/tx-connector-ingress"
+
+  humanReadableName = var.{{ org_name }}_humanReadableName
+  namespace         = kubernetes_namespace.{{ org_name }}_namespace.metadata[0].name
+  domain_name       = local.domain_name
+
+}
+
+locals {
+  {{ org_name }}_vault-url = "http://${lower(var.{{ org_name }}_humanReadableName)}-vault:8200"
+  {{ org_name }}_jdbcUrl   = "jdbc:postgresql://${lower(var.{{ org_name }}_humanReadableName)}-postgresql:${var.{{ org_name }}_datasource.database_port}/${var.{{ org_name }}_datasource.database_name}"
+}
