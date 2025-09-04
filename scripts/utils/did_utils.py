@@ -13,14 +13,14 @@ def update_jwt_gen_script(jwt_gen_path: Path, org_name: str, bpn: str) -> None:
     content = jwt_gen_path.read_text()
     
     # Find the companies array and add new organization
-    companies_pattern = r'(companies = \[[^\]]+)(    \])'
+    companies_pattern = r'(companies = \[[^\]]*?)(\s*\])'
     
-    new_company_entry = f'''        {{
+    new_company_entry = f''',
+        {{
             "filename": "{org_name}.membership.jwt",
             "holder_id": f"did:web:{org_name}.{{domain}}",
             "holder_identifier": "{bpn}"
-        }},
-    '''
+        }}'''
     
     companies_replacement = rf'\1{new_company_entry}\2'
     content = re.sub(companies_pattern, companies_replacement, content, flags=re.DOTALL)

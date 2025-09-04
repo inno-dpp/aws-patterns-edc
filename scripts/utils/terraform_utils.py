@@ -21,13 +21,13 @@ def update_seed_data_tf(seed_data_file: Path, org_name: str, bpn: str) -> None:
     content = seed_data_file.read_text()
     
     # Update seed_collections local
-    seed_collections_pattern = r'(seed_collections = \{[^}]+)'
-    seed_collections_replacement = rf'\1    {org_name} = kubernetes_namespace.{org_name}_namespace.metadata[0].name\n  '
+    seed_collections_pattern = r'(seed_collections = \{[^}]*?)(\s*\})'
+    seed_collections_replacement = rf'\1    {org_name} = kubernetes_namespace.{org_name}_namespace.metadata[0].name\n  \2'
     
     content = re.sub(seed_collections_pattern, seed_collections_replacement, content, flags=re.DOTALL)
     
     # Update companies local
-    companies_pattern = r'(companies = \{[^}]+)(  \})'
+    companies_pattern = r'(companies = \{[^}]*?)(\s*\})'
     
     # Create new company entry
     new_company_entry = f'''    {org_name} = {{
@@ -40,7 +40,7 @@ def update_seed_data_tf(seed_data_file: Path, org_name: str, bpn: str) -> None:
       module_dependency      = module.{org_name}_tx-identity-hub
       ih_internal_url        = "http://${{local.{org_name}_ih_internal_service}}:${{local.{org_name}_ih_internal_identity_port}}"
     }}
-  '''
+    '''
     
     companies_replacement = rf'\1{new_company_entry}\2'
     content = re.sub(companies_pattern, companies_replacement, content, flags=re.DOTALL)
