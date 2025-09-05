@@ -1,8 +1,6 @@
 # Kubernetes Job to seed the BDRS Server with BPNs and DIDs via the Management API
 resource "kubernetes_job" "companyx_seed_bpn_via_mgmt_api" {
-  depends_on = [module.bdrs-server,
-    module.companyz_tx-identity-hub,
-    module.companyz_connector_ingress]
+  depends_on = [module.bdrs-server]
 
   metadata {
     name      = "seed-bpns"
@@ -31,8 +29,6 @@ resource "kubernetes_job" "companyx_seed_bpn_via_mgmt_api" {
             "--env-var", "COMPANYY_DID=${local.companies.companyy.participant_did}",
             "--env-var", "COMPANYX_BPN=${var.companyx_bpn}",
             "--env-var", "COMPANYY_BPN=${var.companyy_bpn}",
-            "--env-var", "COMPANYZ_DID=${local.companies.companyz.participant_did}",
-            "--env-var", "COMPANYZ_BPN=${var.companyz_bpn}",
             "--env-var", "BDRS_API_AUTH_KEY=${var.bdrs_api_auth_key}",
             "--reporters", "cli",
             "--reporter-cli-no-summary", "false",
@@ -70,9 +66,7 @@ resource "kubernetes_job" "seed_connectors_via_mgmt_api" {
     module.companyy_tx-identity-hub,
     module.companyx_connector_ingress,
     module.companyy_connector_ingress
-  ,
-    module.companyz_tx-identity-hub,
-    module.companyz_connector_ingress]
+  ]
 
   metadata {
     name      = "seed-connectors-${each.key}"
@@ -164,19 +158,14 @@ locals {
   companyy_ih_internal_service       = "${lower(var.companyy_humanReadableName)}-tractusx-identityhub"
   companyy_ih_internal_identity_port = 7081
 
-  companyz_ih_internal_service       = "${lower(var.companyz_humanReadableName)}-tractusx-identityhub"
-  companyz_ih_internal_identity_port = 7081
-
   seed_collections = {
     bdrs     = kubernetes_namespace.authority_namespace.metadata[0].name
     companyx = kubernetes_namespace.companyx_namespace.metadata[0].name
     companyy = kubernetes_namespace.companyy_namespace.metadata[0].name
-    companyz = kubernetes_namespace.companyz_namespace.metadata[0].name
   }
 
   companyx_participant_did = "did:web:companyx.${local.domain_name}"
   companyy_participant_did = "did:web:companyy.${local.domain_name}"
-  companyz_participant_did = "did:web:companyz.${local.domain_name}"
   issuer_did               = "did:web:issuer.${local.domain_name}"
 
   companies = {
@@ -199,16 +188,6 @@ locals {
       ih_superuser_apikey    = var.companyy_ih_superuser_apikey
       module_dependency      = module.companyy_tx-identity-hub
       ih_internal_url        = "http://${local.companyy_ih_internal_service}:${local.companyy_ih_internal_identity_port}"
-    }
-    companyz = {
-      namespace              = var.companyz_namespace
-      participant_did        = "did:web:companyz.${local.domain_name}"
-      participant_did_base64 = base64encode(local.companyz_participant_did)
-      vc_membership_path     = "assets/did/companyz.membership.jwt"
-      bpn                    = var.companyz_bpn
-      ih_superuser_apikey    = var.companyz_ih_superuser_apikey
-      module_dependency      = module.companyz_tx-identity-hub
-      ih_internal_url        = "http://${local.companyz_ih_internal_service}:${local.companyz_ih_internal_identity_port}"
     }
   }
 }

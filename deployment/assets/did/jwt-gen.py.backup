@@ -146,11 +146,6 @@ def sign_jwts(domain):
             "filename": "companyy.membership.jwt",
             "holder_id": f"did:web:companyy.{domain}",
             "holder_identifier": "BPNL000000000002"
-        },
-        {
-            "filename": "companyz.membership.jwt",
-            "holder_id": f"did:web:companyz.{domain}",
-            "holder_identifier": "BPNL000000000003"
         }
     ]
     for company in companies:

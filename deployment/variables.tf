@@ -106,3 +106,36 @@ variable "companyy_ih_superuser_apikey" {
   description = "Management API Key for the Super-User. Defaults to 'base64(super-user).base64(super-secret-key)"
   type        = string
 }
+
+##############################################
+# Companyz configuration
+##############################################
+
+variable "companyz_namespace" {
+  type    = string
+  default = "companyz"
+}
+
+variable "companyz_bpn" {
+  default = "BPNL000000000003"
+}
+
+variable "companyz_humanReadableName" {
+  default = "companyz"
+}
+
+variable "companyz_datasource" {
+  default = {
+    database_port  = 5432
+    admin_password = "postgres"
+    database_name  = "edc"
+    username       = "edc"
+    password       = "password"
+  }
+}
+
+variable "companyz_ih_superuser_apikey" {
+  default     = "c3VwZXItdXNlcg==.c3VwZXItc2VjcmV0LWtleQo="
+  description = "Management API Key for the Super-User. Defaults to 'base64(super-user).base64(super-secret-key)"
+  type        = string
+}
