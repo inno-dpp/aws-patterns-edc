@@ -26,7 +26,7 @@ from utils.validation import (
 )
 from utils.terraform_utils import (
     append_to_variables_tf, update_seed_data_tf,
-    create_organization_tf, backup_file
+    create_organization_tf, backup_file, update_mvds_seed_json
 )
 from utils.did_utils import update_jwt_gen_script
 
@@ -41,6 +41,7 @@ class OrganizationAutomator:
         self.templates_dir = script_dir / "templates"
         self.assets_dir = self.deployment_dir / "assets" / "did"
         self.data_sharing_dir = self.repo_root / "data-sharing" / "api-collections"
+        self.seed_file = self.deployment_dir / "assets" / "seed" / "mvds-seed.json"
         
         self.backups = []  # Track backup files for rollback
         
@@ -141,6 +142,13 @@ class OrganizationAutomator:
                 update_seed_data_tf(seed_data_file, params['org_name'], params['bpn'])
                 
             print(f"   ✅ Updated: 4-seed_data.tf")
+            
+            # Update mvds-seed.json
+            if not self.args.dry_run:
+                backup_file(self.seed_file)
+                update_mvds_seed_json(self.seed_file, params['org_name'], params['bpn'])
+                
+            print(f"   ✅ Updated: assets/seed/mvds-seed.json")
             
             return True
             

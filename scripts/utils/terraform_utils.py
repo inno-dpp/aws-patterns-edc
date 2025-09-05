@@ -2,6 +2,7 @@
 Terraform file manipulation utilities.
 """
 import re
+import json
 from pathlib import Path
 from typing import List
 
@@ -27,7 +28,7 @@ def update_seed_data_tf(seed_data_file: Path, org_name: str, bpn: str) -> None:
     content = re.sub(seed_collections_pattern, seed_collections_replacement, content, flags=re.DOTALL)
     
     # Update companies local - add new company before the closing brace
-    companies_pattern = r'(companies = \{[^}]*?companyy = \{[^}]*?\})(\s*\})'
+    companies_pattern = r'(companies = \{.*?)(\n  \})'
     
     # Create new company entry
     new_company_entry = f'''
@@ -42,29 +43,29 @@ def update_seed_data_tf(seed_data_file: Path, org_name: str, bpn: str) -> None:
       ih_internal_url        = "http://${{local.{org_name}_ih_internal_service}}:${{local.{org_name}_ih_internal_identity_port}}"
     }}'''
     
-    companies_replacement = rf'\1{new_company_entry}\n  \2'
+    companies_replacement = rf'\1{new_company_entry}\2'
     content = re.sub(companies_pattern, companies_replacement, content, flags=re.DOTALL)
     
-    # Add new participant DID local variable - insert after companyy_participant_did
-    participant_did_pattern = r'(companyy_participant_did = "did:web:companyy\.\$\{local\.domain_name\}")'
-    participant_did_replacement = rf'\1\n  {org_name}_participant_did = "did:web:{org_name}.${{local.domain_name}}"'
+    # Add new participant DID local variable - insert before issuer_did
+    participant_did_pattern = r'(  issuer_did               = "did:web:issuer\.\$\{local\.domain_name\}")'
+    participant_did_replacement = rf'  {org_name}_participant_did = "did:web:{org_name}.${{local.domain_name}}"\n\1'
     
     content = re.sub(participant_did_pattern, participant_did_replacement, content)
     
-    # Add new internal service locals - insert after companyy locals
-    internal_service_pattern = r'(  companyy_ih_internal_identity_port = 7081)'
-    internal_service_replacement = rf'''\1
+    # Add new internal service locals - insert before seed_collections
+    internal_service_pattern = r'(  seed_collections = \{)'
+    internal_service_replacement = rf'''  {org_name}_ih_internal_service       = "${{lower(var.{org_name}_humanReadableName)}}-tractusx-identityhub"
+  {org_name}_ih_internal_identity_port = 7081
 
-  {org_name}_ih_internal_service       = "${{lower(var.{org_name}_humanReadableName)}}-tractusx-identityhub"
-  {org_name}_ih_internal_identity_port = 7081'''
+\1'''
     
     content = re.sub(internal_service_pattern, internal_service_replacement, content)
     
-    # Update BDRS seeding job to include new organization - add after companyy env vars
-    bdrs_env_vars_pattern = r'("--env-var", "COMPANYY_BPN=\$\{var\.companyy_bpn\}")'
-    bdrs_env_vars_replacement = rf'''\1,
-            "--env-var", "{org_name.upper()}_DID=${{local.companies.{org_name}.participant_did}}",
-            "--env-var", "{org_name.upper()}_BPN=${{var.{org_name}_bpn}}"'''
+    # Update BDRS seeding job to include new organization - add before BDRS_API_AUTH_KEY
+    bdrs_env_vars_pattern = r'(            "--env-var", "BDRS_API_AUTH_KEY=\$\{var\.bdrs_api_auth_key\}")'
+    bdrs_env_vars_replacement = rf'''            "--env-var", "{org_name.upper()}_DID=${{local.companies.{org_name}.participant_did}}",
+            "--env-var", "{org_name.upper()}_BPN=${{var.{org_name}_bpn}}",
+\1'''
     
     content = re.sub(bdrs_env_vars_pattern, bdrs_env_vars_replacement, content)
     
@@ -117,3 +118,85 @@ def find_terraform_files(directory: Path) -> List[Path]:
     Find all Terraform files in the directory.
     """
     return list(directory.glob("*.tf"))
+
+
+def update_mvds_seed_json(seed_file: Path, org_name: str, bpn: str) -> None:
+    """
+    Update mvds-seed.json to include the new organization in the BDRS seeding.
+    """
+    with open(seed_file, 'r') as f:
+        seed_data = json.load(f)
+    
+    # Find the SeedBDRS section
+    seed_bdrs_section = None
+    for item in seed_data.get("item", []):
+        if item.get("name") == "SeedBDRS":
+            seed_bdrs_section = item
+            break
+    
+    if not seed_bdrs_section:
+        raise ValueError("SeedBDRS section not found in mvds-seed.json")
+    
+    # Create new BPN mapping entry
+    org_upper = org_name.upper()
+    new_bpn_mapping = {
+        "name": f"Create {org_name.title()} BPN Mapping",
+        "event": [
+            {
+                "listen": "test",
+                "script": {
+                    "exec": [
+                        "pm.test(\"Status code is 204\", function () {",
+                        "    pm.response.to.have.status(204);",
+                        "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                }
+            },
+            {
+                "listen": "prerequest",
+                "script": {
+                    "exec": [
+                        ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                }
+            }
+        ],
+        "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+                "mode": "raw",
+                "raw": f'{{\n  "bpn": "{{{{{org_upper}_BPN}}}}",\n  "did": "{{{{{org_upper}_DID}}}}"\\n}}',
+                "options": {
+                    "raw": {
+                        "language": "json"
+                    }
+                }
+            },
+            "url": {
+                "raw": "{{BDRS_MGMT_URL}}/bpn-directory",
+                "host": [
+                    "{{BDRS_MGMT_URL}}"
+                ],
+                "path": [
+                    "bpn-directory"
+                ]
+            }
+        },
+        "response": []
+    }
+    
+    # Add the new entry to the SeedBDRS items
+    if "item" not in seed_bdrs_section:
+        seed_bdrs_section["item"] = []
+    
+    seed_bdrs_section["item"].append(new_bpn_mapping)
+    
+    # Write back to file with proper formatting
+    with open(seed_file, 'w') as f:
+        json.dump(seed_data, f, indent=2)
+        f.write('\n')  # Add trailing newline
